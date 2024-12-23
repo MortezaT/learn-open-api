@@ -1,0 +1,94 @@
+services:
+  server:
+    container_name: todo-server
+    build:
+      context: ./apps/server
+      dockerfile: ./Dockerfile.dev
+    env_file:
+      - ./apps/server/.env.dev
+    ports:
+      - 3001:3001
+    volumes:
+      - ./apps/server:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - postgres
+    develop:
+      watch:
+        - action: rebuild
+          path: ./docker-compose.yml
+        - action: rebuild
+          path: ./apps/server/package.json
+        - action: rebuild
+          path: ./apps/server/Dockerfile.dev
+        - action: sync
+          path: ./apps/server
+          target: /app
+          ignore:
+            - ./apps/server/src
+            - ./apps/server/package.json
+            - ./apps/server/node_modules
+
+  client:
+    container_name: todo-client
+    build:
+      context: ./apps/client
+      dockerfile: ./Dockerfile.dev
+    env_file:
+      - ./apps/client/.env.dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./apps/client:/app
+      - /app/node_modules
+    develop:
+      watch:
+        - action: rebuild
+          path: ./docker-compose.yml
+        - action: rebuild
+          path: ./apps/client/Dockerfile.dev
+        - action: sync
+          path: ./apps/client
+          target: /app
+          ignore:
+            - ./apps/client/src
+            - ./apps/client/package.json
+            - ./apps/client/node_modules
+
+  postgres:
+    container_name: todo-db
+    image: postgres:17
+    environment:
+      - POSTGRES_PASSWORD=example
+    ports:
+      - 5432:5432
+    develop:
+      watch:
+        - action: rebuild
+          path: ./docker-compose.yml
+  
+  redis:
+    container_name: todo-redis
+    image: redis:7
+    environment:
+      - REDIS_PASSWORD=password
+    develop:
+      watch:
+        - action: rebuild
+          path: ./docker-compose.yml
+
+  redis_commander:
+    container_name: todo-redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - 8081:8081
+    depends_on:
+      - redis
+    develop:
+      watch:
+        - action: rebuild
+          path: ./docker-compose.yml
