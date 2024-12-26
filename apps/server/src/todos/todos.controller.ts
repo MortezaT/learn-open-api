@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { TodosService } from './todos.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { TodosService } from './todos.service';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { TodoDto } from './dto/todo.dto';
 
+@ApiTags('Todos')
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
@@ -18,6 +29,13 @@ export class TodosController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: TodoDto })
+  @ApiNotFoundResponse({
+    description: `Well, it's not there dude! 
+    What should I tell you, huh?!?
+    Stop crying and move on with your life, bro!
+    `,
+  })
   findOne(@Param('id') id: string) {
     return this.todosService.findOne(+id);
   }

@@ -1,6 +1,7 @@
 services:
   server:
     container_name: todo-server
+    image: todo-server
     build:
       context: ./apps/server
       dockerfile: ./Dockerfile.dev
@@ -8,30 +9,24 @@ services:
       - ./apps/server/.env.dev
     ports:
       - 3001:3001
-    volumes:
-      - ./apps/server:/app
-      - /app/node_modules
     depends_on:
       - redis
       - postgres
     develop:
       watch:
-        - action: rebuild
-          path: ./docker-compose.yml
-        - action: rebuild
-          path: ./apps/server/package.json
-        - action: rebuild
-          path: ./apps/server/Dockerfile.dev
-        - action: sync
-          path: ./apps/server
-          target: /app
-          ignore:
-            - ./apps/server/src
-            - ./apps/server/package.json
-            - ./apps/server/node_modules
+        - path: ./docker-compose.yml
+          action: rebuild
+        - path: ./apps/server/Dockerfile.dev
+          action: rebuild
+        - path: ./apps/server/package.json
+          action: rebuild
+        - path: ./apps/server/src
+          target: /app/src
+          action: sync
 
   client:
     container_name: todo-client
+    image: todo-client
     build:
       context: ./apps/client
       dockerfile: ./Dockerfile.dev
@@ -39,22 +34,17 @@ services:
       - ./apps/client/.env.dev
     ports:
       - 3000:3000
-    volumes:
-      - ./apps/client:/app
-      - /app/node_modules
     develop:
       watch:
-        - action: rebuild
-          path: ./docker-compose.yml
-        - action: rebuild
-          path: ./apps/client/Dockerfile.dev
-        - action: sync
-          path: ./apps/client
-          target: /app
-          ignore:
-            - ./apps/client/src
-            - ./apps/client/package.json
-            - ./apps/client/node_modules
+        - path: ./docker-compose.yml
+          action: rebuild
+        - path: ./apps/client/Dockerfile.dev
+          action: rebuild
+        - path: ./apps/client/package.json
+          action: rebuild
+        - path: ./apps/client/src
+          target: /app/src
+          action: sync
 
   postgres:
     container_name: todo-db
@@ -63,20 +53,12 @@ services:
       - POSTGRES_PASSWORD=example
     ports:
       - 5432:5432
-    develop:
-      watch:
-        - action: rebuild
-          path: ./docker-compose.yml
-  
+
   redis:
     container_name: todo-redis
     image: redis:7
     environment:
       - REDIS_PASSWORD=password
-    develop:
-      watch:
-        - action: rebuild
-          path: ./docker-compose.yml
 
   redis_commander:
     container_name: todo-redis-commander
@@ -88,7 +70,3 @@ services:
       - 8081:8081
     depends_on:
       - redis
-    develop:
-      watch:
-        - action: rebuild
-          path: ./docker-compose.yml
