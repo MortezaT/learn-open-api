@@ -72,14 +72,10 @@ services:
       - redis
 
   openapi_generator:
-    container_name: openapi-generator
-    image: openapi-generator
-    build:
-      context: ./tools/generator
-      dockerfile: Dockerfile
+    container_name: todo_openapi_generator
+    image: openapitools/openapi-generator-cli
     depends_on:
       - todo-api
     volumes:
-      - ./tools/generator/.build:/local/.build
-      # - ./tools/generator/:/local/
-  
+      - ./.generated/openapi:/local
+    command: generate -i http://todo-api:3001/docs-json --generator-name typescript-axios -o /local/build --additional-properties=useSingleRequestParameter=true
