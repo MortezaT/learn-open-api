@@ -1,7 +1,7 @@
 services:
-  server:
-    container_name: todo-server
-    image: todo-server
+  todo-api:
+    container_name: todo-api
+    image: todo-api
     build:
       context: ./apps/server
       dockerfile: ./Dockerfile.dev
@@ -70,3 +70,16 @@ services:
       - 8081:8081
     depends_on:
       - redis
+
+  openapi_generator:
+    container_name: openapi-generator
+    image: openapi-generator
+    build:
+      context: ./tools/generator
+      dockerfile: Dockerfile
+    depends_on:
+      - todo-api
+    volumes:
+      - ./tools/generator/.build:/local/.build
+      # - ./tools/generator/:/local/
+  
