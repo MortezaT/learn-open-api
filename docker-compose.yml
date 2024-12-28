@@ -1,5 +1,5 @@
 services:
-  todo-api:
+  api:
     container_name: todo-api
     image: todo-api
     build:
@@ -11,7 +11,9 @@ services:
       - 3001:3001
     depends_on:
       - redis
-      - postgres
+      - db
+    healthcheck:
+      test: curl -f http://api:3001 || exit 1
     develop:
       watch:
         - path: ./docker-compose.yml
@@ -34,6 +36,8 @@ services:
       - ./apps/client/.env.dev
     ports:
       - 3000:3000
+    depends_on:
+      - api_generator
     develop:
       watch:
         - path: ./docker-compose.yml
@@ -46,7 +50,7 @@ services:
           target: /app/src
           action: sync
 
-  postgres:
+  db:
     container_name: todo-db
     image: postgres:17
     environment:
@@ -71,11 +75,13 @@ services:
     depends_on:
       - redis
 
-  openapi_generator:
-    container_name: todo_openapi_generator
+  api_generator:
+    container_name: todo-api-generator
     image: openapitools/openapi-generator-cli
     depends_on:
-      - todo-api
+      api: 
+        condition: service_healthy
+        restart: true
     volumes:
-      - ./.generated/openapi:/local
-    command: generate -i http://todo-api:3001/docs-json --generator-name typescript-axios -o /local/build --additional-properties=useSingleRequestParameter=true
+      - ./.generated/api:/local
+    command: generate -i http://api:3001/docs-json --generator-name typescript-axios -o /local/build --additional-properties=useSingleRequestParameter=true
