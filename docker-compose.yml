@@ -77,13 +77,11 @@ services:
 
   api_generator:
     container_name: todo-api-generator
+    image: openapitools/openapi-generator-cli
     depends_on:
-      api:
+      api: 
         condition: service_healthy
         restart: true
-    image: todo-api-generator
-    build:
-      context: ./apps/client
-      dockerfile: ./Dockerfile.generate-api
     volumes:
-      - ./apps/client/src/api/generated:/local/generated
+      - ./apps/client/src/api/generated:/local/build
+    command: generate -i http://api/docs-json -g typescript-axios -o /local/build -p=useSingleRequestParameter=true

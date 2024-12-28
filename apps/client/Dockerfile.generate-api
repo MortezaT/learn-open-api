@@ -1,5 +1,0 @@
-FROM timbru31/java-node
-RUN npm install @openapitools/openapi-generator-cli -g
-WORKDIR /local
-COPY ./scripts/api ./api
-CMD ["sh", "./api/generate.sh"]
