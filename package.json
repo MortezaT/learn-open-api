@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "generate/api": "sh ./scripts/generate-api.sh"
+    "start:dev": "cd ./apps/client && pnpm run start:dev",
+    "start:dev:build": "cd ./apps/client && pnpm run start:dev:build",
+    "generate/api": "cd ./apps/client && pnpm run generate/api"
   },
   "keywords": [],
   "author": "",

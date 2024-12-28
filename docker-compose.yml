@@ -8,12 +8,12 @@ services:
     env_file:
       - ./apps/server/.env.dev
     ports:
-      - 3001:3001
+      - 3001:80
     depends_on:
       - redis
       - db
     healthcheck:
-      test: curl -f http://api:3001 || exit 1
+      test: curl -f http://api/health || exit 1
     develop:
       watch:
         - path: ./docker-compose.yml
@@ -77,11 +77,13 @@ services:
 
   api_generator:
     container_name: todo-api-generator
-    image: openapitools/openapi-generator-cli
     depends_on:
-      api: 
+      api:
         condition: service_healthy
         restart: true
+    image: todo-api-generator
+    build:
+      context: ./apps/client
+      dockerfile: ./Dockerfile.generate-api
     volumes:
-      - ./.generated/api:/local
-    command: generate -i http://api:3001/docs-json --generator-name typescript-axios -o /local/build --additional-properties=useSingleRequestParameter=true
+      - ./apps/client/src/api/generated:/local/generated
