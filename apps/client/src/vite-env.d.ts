@@ -1,9 +1,9 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly API_SCHEMA: string;
-  readonly API_HOST: string;
-  readonly API_PORT: string;
-  readonly CLIENT_PORT: string;
-  readonly CHOKIDAR_USE_POLLING: boolean;
+  readonly VITE_API_SCHEMA: string;
+  readonly VITE_API_HOST: string;
+  readonly VITE_API_PORT: string;
+  readonly VITE_CLIENT_PORT: string;
+  readonly VITE_CHOKIDAR_USE_POLLING: boolean;
 }

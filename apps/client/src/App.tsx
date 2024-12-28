@@ -1,8 +1,17 @@
+import { AppProvider, Todos } from './components';
+import './App.css';
+
 function App() {
+  console.log(import.meta.env);
   return (
-    <h1 style={{ width: '100vw', display: 'flex', alignItems: 'center' }}>
-      Running app in {import.meta.env.MODE} mode!
-    </h1>
+    <AppProvider>
+      <h1 style={{ textAlign: 'center' }}>
+        Running app in
+        <pre style={{ textTransform: 'uppercase' }}>{import.meta.env.MODE}</pre>
+        mode!
+      </h1>
+      <Todos />
+    </AppProvider>
   );
 }
 
